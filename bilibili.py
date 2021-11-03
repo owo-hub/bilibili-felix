@@ -63,7 +63,7 @@ async def bilibili_notifs_loop():
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(embed=embed)
+        await update_channel.send(content="@everyone", embed=embed)
 
     elif live_status == 0 and last_bilibili_status == True: # 방송 종료
         last_bilibili_status = False
@@ -86,7 +86,7 @@ async def bilibili_notifs_loop():
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(content="@everyone", embed=embed)
+        await update_channel.send(embed=embed)
         
     if last_bilibili_status == True:
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
