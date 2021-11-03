@@ -64,7 +64,7 @@ async def bilibili_notifs_loop():
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.implicitly_wait(5)
         driver.get(url=live_url)
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(5)
         rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
         rank = rank.replace("No. ", "")
         gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
@@ -85,8 +85,11 @@ async def bilibili_notifs_loop():
         embed.set_author(name=f"{streamer_name}님이 방송을 시작했습니다.", url=live_url, icon_url=avatar_url)
         embed.title = f"{emojis['live1']}{emojis['live2']} {title}"
         embed.add_field(name=f"{emojis['followers']} **팔로워**", value=f"```\n{follower}명```", inline=True)
-        embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
-        embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        try:
+            embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
+            embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        except:
+            pass
         embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
         embed.description = f"[{emojis['bilibili']} 방송 보러 가기]({live_url})"
 
@@ -115,12 +118,10 @@ async def bilibili_notifs_loop():
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.implicitly_wait(5)
         driver.get(url=live_url)
-        await asyncio.sleep(1.5)
         rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
         rank = rank.replace("No. ", "")
         gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
         gifts = gifts.replace(" 万", "")
-        image = driver.get_screenshot_as_png()
         driver.quit()
 
         embed = discord.Embed()
@@ -128,8 +129,11 @@ async def bilibili_notifs_loop():
         embed.set_author(name=f"{streamer_name}님이 방송을 종료했습니다.", url=live_url, icon_url=avatar_url)
         embed.title = f"{emojis['nolive1']}{emojis['nolive2']} {title}"
         embed.add_field(name=f"{emojis['followers']} **팔로워**", value=f"```\n{follower}명```", inline=True)
-        embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
-        embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        try:
+            embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
+            embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        except:
+            pass
         embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
 
         embed.description = f"[{emojis['bilibili']} 팔로우 하러 가기]({live_url})"
