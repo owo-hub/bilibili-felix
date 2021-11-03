@@ -99,4 +99,4 @@ async def on_ready():
     print("----------------------------------------")
     bilibili_notifs_loop.start()
     
-client.run(os.environ['TOKEN'])
+client.run("Njg2NzUxNDY0MjA2MzY4NzY5.XmbxJA.ZQjvPB70WuvXnW3YuOFmKXdI0tc")
