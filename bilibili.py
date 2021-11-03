@@ -118,7 +118,7 @@ async def on_ready():
     global emojis
     update_channel = client.get_channel(885140926157176882)
     print("Loaded Notification Channel.")
-    status_role = client.get_role(868276590843408385)
+    status_role = client.get_guild(656862634754310174).get_role(868276590843408385)
     print("Loaded Status Role.")
     emojis = {
         'bilibili': client.get_emoji(885035459242229780),
