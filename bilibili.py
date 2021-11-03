@@ -9,7 +9,6 @@ import json
 import os
 import io
 import asyncio
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
 import selenium.webdriver as webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
@@ -59,12 +58,9 @@ async def bilibili_notifs_loop():
         driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=webdriver_options)
         driver.get(url=live_url)
         await asyncio.sleep(1.5)
-        driver.save_screenshot(f'bilibili-{mid}-screenshot.png')
+        image = driver.get_screenshot_as_png()
         driver.quit()
-        buffer = io.BytesIO()
-        image = Image.open(f"bilibili-{mid}-screenshot.png")
-        image.save(buffer, format="PNG")
-        buffer.seek(0)
+        buffer = io.BytesIO(image)
 
         embed = discord.Embed()
         embed.colour = 0x01A1D6
@@ -104,7 +100,7 @@ async def bilibili_notifs_loop():
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
-       # embed.set_image(url=cover_url)
+        embed.set_image(url=cover_url)
         #embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
