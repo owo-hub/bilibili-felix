@@ -7,6 +7,14 @@ import urllib.parse, re
 from urllib.request import urlopen
 import json
 import os
+import io
+import asyncio
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
+import selenium.webdriver as webdriver
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def read_token():
     with open("token.txt", "r") as f:
@@ -44,6 +52,19 @@ async def bilibili_notifs_loop():
     
     if live_status == 1 and last_bilibili_status == False: # 방송 시작
         last_bilibili_status = True
+        webdriver_options = webdriver.ChromeOptions()
+        webdriver_options.add_argument('headless')
+        webdriver_options.add_argument('disable-gpu')
+        webdriver_options.add_argument('window-size=1280,720')
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=webdriver_options)
+        driver.get(url=live_url)
+        await asyncio.sleep(1.5)
+        driver.save_screenshot(f'bilibili-{mid}-screenshot.png')
+        driver.quit()
+        buffer = io.BytesIO()
+        image = Image.open(f"bilibili-{mid}-screenshot.png")
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
 
         embed = discord.Embed()
         embed.colour = 0x01A1D6
@@ -57,13 +78,15 @@ async def bilibili_notifs_loop():
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
+        embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
         #embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
         #embed.set_image(url=cover_url)
         #embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(content="@everyone", embed=embed)
+        await update_channel.send(file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
+        #await update_channel.send(content="@everyone", embed=embed)
 
     elif live_status == 0 and last_bilibili_status == True: # 방송 종료
         last_bilibili_status = False
