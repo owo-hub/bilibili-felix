@@ -13,6 +13,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from PIL import Image
 
 def read_token():
     with open("token.txt", "r") as f:
@@ -62,27 +63,36 @@ async def bilibili_notifs_loop():
             chromedriver = f"{os.getcwd()}\\chromedriver.exe"
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(2)
+        rank = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
+        rank = rank.replace("No. ", "")
+        gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
+        gifts = gifts.replace(" 万", "")
         image = driver.get_screenshot_as_png()
         driver.quit()
+        
         buffer = io.BytesIO(image)
-
+        cropped = Image.open(buffer)
+        area = (30, 164, 936, 674)
+        cropped = cropped.crop(area)
+        buffer = io.BytesIO()
+        cropped.save(buffer, format="PNG")
+        buffer.seek(0)
+        
         embed = discord.Embed()
         embed.colour = 0x01A1D6
         embed.set_author(name=f"{streamer_name}님이 방송을 시작했습니다.", url=live_url, icon_url=avatar_url)
         embed.title = f"{emojis['live1']}{emojis['live2']} {title}"
         embed.add_field(name=f"{emojis['followers']} **팔로워**", value=f"```\n{follower}명```", inline=True)
-        #embed.add_field(name=f"{emojis['pointer']} **레벨**", value=f"```\n{data['pointer']}```", inline=True)
-        embed.add_field(name=f"{emojis['online']} **온라인**", value=f"```\n{online}명```", inline=True)
-        #embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{data['rank']}```", inline=True)
+        embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
+        embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
         embed.description = f"[{emojis['bilibili']} 방송 보러 가기]({live_url})"
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
         embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
-        #embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
-        #embed.set_image(url=cover_url)
-        #embed.set_thumbnail(url=logotext_url)
+        embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
@@ -91,22 +101,40 @@ async def bilibili_notifs_loop():
 
     elif live_status == 0 and last_bilibili_status == True: # 방송 종료
         last_bilibili_status = False
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('headless')
+        chrome_options.add_argument('disable-gpu')
+        chrome_options.add_argument('no-sandbox')
+        chrome_options.add_argument('window-size=1280,720')
+        try:
+            chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+            chromedriver = os.environ['CHROMEDRIVER_PATH']
+        except:
+            chromedriver = f"{os.getcwd()}\\chromedriver.exe"
+        driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
+        driver.get(url=live_url)
+        await asyncio.sleep(1)
+        rank = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
+        rank = rank.replace("No. ", "")
+        gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
+        gifts = gifts.replace(" 万", "")
+        driver.quit()
 
         embed = discord.Embed()
         embed.colour = discord.Color.red()
         embed.set_author(name=f"{streamer_name}님이 방송을 종료했습니다.", url=live_url, icon_url=avatar_url)
         embed.title = f"{emojis['nolive1']}{emojis['nolive2']} {title}"
         embed.add_field(name=f"{emojis['followers']} **팔로워**", value=f"```\n{follower}명```", inline=True)
-        #embed.add_field(name=f"{emojis['pointer']} **레벨**", value=f"```\n{data['pointer']}```", inline=True)
-        embed.add_field(name=f"{emojis['online']} **마지막 온라인**", value=f"```\n{online}명```", inline=True)
-        #embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{data['rank']}```", inline=True)
+        embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
+        embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
 
         embed.description = f"[{emojis['bilibili']} 팔로우 하러 가기]({live_url})"
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
         embed.set_image(url=cover_url)
-        #embed.set_thumbnail(url=logotext_url)
+        embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
@@ -114,7 +142,7 @@ async def bilibili_notifs_loop():
         
     if last_bilibili_status == True:
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
-        await status_role.edit(name=f"👀온라인 {online}명 ❤️팔로워 {follower}명")
+        await status_role.edit(name=f"📈인기도 {online} ❤️팔로워 {follower}명")
         await client.change_presence(
             status=discord.Status.online,
             activity=discord.Activity(
