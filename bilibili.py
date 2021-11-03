@@ -56,11 +56,8 @@ async def bilibili_notifs_loop():
         chrome_options.add_argument('disable-gpu')
         chrome_options.add_argument('no-sandbox')
         chrome_options.add_argument('window-size=1280,720')
-        try:
-            chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
-            chromedriver = os.environ['CHROMEDRIVER_PATH']
-        except:
-            chromedriver = f"{os.getcwd()}\\chromedriver.exe"
+        chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+        chromedriver = os.environ['CHROMEDRIVER_PATH']
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
         await asyncio.sleep(2)
@@ -68,6 +65,7 @@ async def bilibili_notifs_loop():
         rank = rank.replace("No. ", "")
         gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
         gifts = gifts.replace(" 万", "")
+        await asyncio.sleep(2)
         image = driver.get_screenshot_as_png()
         driver.quit()
         
@@ -106,18 +104,17 @@ async def bilibili_notifs_loop():
         chrome_options.add_argument('disable-gpu')
         chrome_options.add_argument('no-sandbox')
         chrome_options.add_argument('window-size=1280,720')
-        try:
-            chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
-            chromedriver = os.environ['CHROMEDRIVER_PATH']
-        except:
-            chromedriver = f"{os.getcwd()}\\chromedriver.exe"
+        chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+        chromedriver = os.environ['CHROMEDRIVER_PATH']
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)
         rank = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
         rank = rank.replace("No. ", "")
         gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
         gifts = gifts.replace(" 万", "")
+        await asyncio.sleep(2)
+        image = driver.get_screenshot_as_png()
         driver.quit()
 
         embed = discord.Embed()
