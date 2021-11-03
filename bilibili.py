@@ -1,4 +1,4 @@
-﻿import discord
+import discord
 from discord.ext import tasks, commands
 from discord.utils import get
 import configparser
@@ -6,12 +6,22 @@ from datetime import datetime
 import urllib.parse, re
 from urllib.request import urlopen
 import json
+import os
 
-BOT_TOKEN = os.environ['TOKEN']
+def read_token():
+    with open("token.txt", "r") as f:
+        lines = f.readlines()
+        return lines[0].strip()
+
+try:
+    BOT_TOKEN = os.environ['DISCORD_TOKEN']
+except:
+    BOT_TOKEN = read_token()
+    
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
-last_bilibili_status = False
+last_bilibili_status = True
 
 @tasks.loop(minutes=1)
 async def bilibili_notifs_loop():
@@ -80,8 +90,10 @@ async def bilibili_notifs_loop():
 @client.event
 async def on_ready():
     global update_channel
+    global status_role
     global emojis
     update_channel = client.get_channel(885140926157176882)
+    status_role = client.get_role(868276590843408385)
     print("Loaded Notification Channel.")
     emojis = {
         'bilibili': client.get_emoji(885035459242229780),
