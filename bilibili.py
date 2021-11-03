@@ -21,12 +21,13 @@ except:
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
-last_bilibili_status = True
+last_bilibili_status = False
 
 @tasks.loop(minutes=1)
 async def bilibili_notifs_loop():
     global last_bilibili_status
     global update_channel
+    global status_role
     global emojis
     
     mid = "1109994528"
@@ -86,15 +87,39 @@ async def bilibili_notifs_loop():
         #embed.timestamp = datetime.now()
 
         await update_channel.send(embed=embed)
+        
+    if last_bilibili_status == True:
+        await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"온라인 {online}명 팔로워 {follower}명")
+        await status_role.edit(name=f"📺 {title}")
+        await client.change_presence(
+            status=discord.Status.online,
+            activity=discord.Activity(
+                type=discord.ActivityType.streaming,
+               name=f"비리비리에서",
+               url="https://www.twitch.tv/felix_overwatch"
+           )
+       )
+    
+    elif last_bilibili_status == False:
+        await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick="")
+        await status_role.edit(name="❌ 비리비리 방송 중 아님")
+        await client.change_presence(
+            status=discord.Status.dnd,
+            activity=discord.Game(
+                name="😏 무언가"
+            )
+        )
 
 @client.event
 async def on_ready():
+    global last_bilibili_status
     global update_channel
     global status_role
     global emojis
     update_channel = client.get_channel(885140926157176882)
-    status_role = client.get_role(868276590843408385)
     print("Loaded Notification Channel.")
+    status_role = client.get_role(868276590843408385)
+    print("Loaded Status Role.")
     emojis = {
         'bilibili': client.get_emoji(885035459242229780),
         'live1': client.get_emoji(885040582395842570),
