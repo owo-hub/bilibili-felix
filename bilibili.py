@@ -82,7 +82,7 @@ async def bilibili_notifs_loop():
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
+        await update_channel.send(content="@everyone", file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
         #await update_channel.send(content="@everyone", embed=embed)
 
     elif live_status == 0 and last_bilibili_status == True: # 방송 종료
