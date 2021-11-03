@@ -59,7 +59,7 @@ async def bilibili_notifs_loop():
             chromedriver = os.environ['CHROMEDRIVER_PATH']
         except:
             chromedriver = f"{os.getcwd()}\\chromedriver.exe"
-        driver = webdriver.Chrome(chromedriver, options=chrome_options)
+        driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
         await asyncio.sleep(1.5)
         image = driver.get_screenshot_as_png()
