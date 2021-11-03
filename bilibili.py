@@ -21,7 +21,7 @@ except:
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
-last_bilibili_status = True
+last_bilibili_status = False
 
 @tasks.loop(minutes=1)
 async def bilibili_notifs_loop():
@@ -86,7 +86,7 @@ async def bilibili_notifs_loop():
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(embed=embed)
+        await update_channel.send(content="@everyone", embed=embed)
         
     if last_bilibili_status == True:
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
