@@ -7,6 +7,7 @@ import urllib.parse, re
 from urllib.request import urlopen
 import json
 
+BOT_TOKEN = os.environ['TOKEN']
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
@@ -99,4 +100,4 @@ async def on_ready():
     print("----------------------------------------")
     bilibili_notifs_loop.start()
     
-client.run("Njg2NzUxNDY0MjA2MzY4NzY5.XmbxJA.ZQjvPB70WuvXnW3YuOFmKXdI0tc")
+client.run(BOT_TOKEN)
