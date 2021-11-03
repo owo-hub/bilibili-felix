@@ -54,12 +54,8 @@ async def bilibili_notifs_loop():
         chrome_options.add_argument('headless')
         chrome_options.add_argument('disable-gpu')
         chrome_options.add_argument('window-size=1280,720')
-        try:
-            chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
-            chromedriver = os.environ['CHROMEDRIVER_PATH']
-        except:
-            chromedriver = f"{os.getcwd()}\\chromedriver.exe"
-        driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get(url=live_url)
         await asyncio.sleep(1.5)
         image = driver.get_screenshot_as_png()
