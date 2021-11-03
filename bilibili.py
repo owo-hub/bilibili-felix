@@ -1,7 +1,6 @@
 import discord
 from discord.ext import tasks, commands
 from discord.utils import get
-import configparser
 from datetime import datetime
 import urllib.parse, re
 from urllib.request import urlopen
@@ -51,12 +50,16 @@ async def bilibili_notifs_loop():
     
     if live_status == 1 and last_bilibili_status == False: # 방송 시작
         last_bilibili_status = True
-        webdriver_options = webdriver.ChromeOptions()
-        webdriver_options.add_argument('headless')
-        webdriver_options.add_argument('disable-gpu')
-        webdriver_options.add_argument('window-size=1280,720')
-        webdriver_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=webdriver_options)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('headless')
+        chrome_options.add_argument('disable-gpu')
+        chrome_options.add_argument('window-size=1280,720')
+        try:
+            chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+            chromedriver = os.environ['CHROMEDRIVER_PATH']
+        except:
+            chromedriver = f"{os.getcwd()}\\chromedriver.exe"
+        driver = webdriver.Chrome(chromedriver, options=chrome_options)
         driver.get(url=live_url)
         await asyncio.sleep(1.5)
         image = driver.get_screenshot_as_png()
@@ -136,10 +139,13 @@ async def on_ready():
     global update_channel
     global status_role
     global emojis
+    global log_channel
     update_channel = client.get_channel(885140926157176882)
     print("Loaded Notification Channel.")
     status_role = client.get_guild(656862634754310174).get_role(868276590843408385)
     print("Loaded Status Role.")
+    log_channel = client.get_channel(884985900361187379)
+    print("Loaded Log Channel.")
     emojis = {
         'bilibili': client.get_emoji(885035459242229780),
         'live1': client.get_emoji(885040582395842570),
@@ -155,6 +161,7 @@ async def on_ready():
     print("Bot is ready!")
     print(f"{client.user} ({client.user.id})")
     print("----------------------------------------")
+    await log_channel.send("Bot is ready")
     bilibili_notifs_loop.start()
     
 client.run(BOT_TOKEN)
