@@ -21,7 +21,7 @@ except:
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
-last_bilibili_status = False
+last_bilibili_status = True
 
 @tasks.loop(minutes=1)
 async def bilibili_notifs_loop():
@@ -90,12 +90,12 @@ async def bilibili_notifs_loop():
         
     if last_bilibili_status == True:
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
-        await status_role.edit(name=f"👀온라인 {online}명 / ❤️팔로워 {follower}명")
+        await status_role.edit(name=f"👀온라인 {online}명 ❤️팔로워 {follower}명")
         await client.change_presence(
             status=discord.Status.online,
             activity=discord.Activity(
                 type=discord.ActivityType.streaming,
-               name=f"비리비리에서",
+               name=f"💙 비리비리에서",
                url="https://www.twitch.tv/felix_overwatch"
            )
        )
