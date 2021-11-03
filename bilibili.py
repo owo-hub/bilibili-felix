@@ -7,11 +7,6 @@ import urllib.parse, re
 from urllib.request import urlopen
 import json
 
-def read_token():
-    with open("token.txt", "r") as f:
-        lines = f.readlines()
-        return lines[0].strip()
-
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
@@ -104,4 +99,4 @@ async def on_ready():
     print("----------------------------------------")
     bilibili_notifs_loop.start()
     
-client.run(read_token())
+client.run(os.environ['TOKEN'])
