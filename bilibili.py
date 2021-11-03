@@ -65,9 +65,9 @@ async def bilibili_notifs_loop():
         driver.implicitly_wait(5)
         driver.get(url=live_url)
         await asyncio.sleep(5)
-        rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
+        rank = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
         rank = rank.replace("No. ", "")
-        gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
+        gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
         gifts = gifts.replace(" 万", "")
         image = driver.get_screenshot_as_png()
         driver.quit()
@@ -115,10 +115,10 @@ async def bilibili_notifs_loop():
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.implicitly_wait(5)
         driver.get(url=live_url)
-        await asyncio.sleep(1.5)
-        rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
+        await asyncio.sleep(5)
+        rank = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
         rank = rank.replace("No. ", "")
-        gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
+        gifts = driver.find_element_by_xpath('//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
         gifts = gifts.replace(" 万", "")
         driver.quit()
 
