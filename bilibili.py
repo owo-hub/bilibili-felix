@@ -63,14 +63,13 @@ async def bilibili_notifs_loop():
             chromedriver = f"{os.getcwd()}\\chromedriver.exe"
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
-        await asyncio.sleep(0.5)
         rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
-        rank = rank.replace("No. ", "")
         gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
-        gifts = gifts.replace(" 万", "")
         await asyncio.sleep(1.5)
         image = driver.get_screenshot_as_png()
         driver.quit()
+        rank = rank.replace("No. ", "")
+        gifts = gifts.replace(" 万", "")
         
         buffer = io.BytesIO(image)
         cropped = Image.open(buffer)
