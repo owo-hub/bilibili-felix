@@ -63,13 +63,13 @@ async def bilibili_notifs_loop():
             chromedriver = f"{os.getcwd()}\\chromedriver.exe"
         driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
         driver.get(url=live_url)
+        await asyncio.sleep(2)
         rank = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/a[3]/div/span').text
+        rank = rank.replace("No. ", "")
         gifts = driver.find_element(By.XPATH, '//*[@id="head-info-vm"]/div/div/div[2]/div[1]/div[2]/span').text
-        await asyncio.sleep(1.5)
+        gifts = gifts.replace(" 万", "")
         image = driver.get_screenshot_as_png()
         driver.quit()
-        rank = rank.replace("No. ", "")
-        gifts = gifts.replace(" 万", "")
         
         buffer = io.BytesIO(image)
         cropped = Image.open(buffer)
@@ -97,6 +97,16 @@ async def bilibili_notifs_loop():
         #embed.timestamp = datetime.now()
 
         await update_channel.send(content="@everyone", file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
+        
+        await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
+        await client.change_presence(
+            status=discord.Status.online,
+            activity=discord.Activity(
+                type=discord.ActivityType.streaming,
+               name=f"💙 비리비리에서",
+               url="https://www.twitch.tv/felix_overwatch"
+           )
+       )
         #await update_channel.send(content="@everyone", embed=embed)
 
     elif live_status == 0 and last_bilibili_status == True: # 방송 종료
@@ -119,20 +129,6 @@ async def bilibili_notifs_loop():
         #embed.timestamp = datetime.now()
 
         await update_channel.send(embed=embed)
-        
-    if last_bilibili_status == True:
-        await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
-        await status_role.edit(name=f"📈인기도 {online} ❤️팔로워 {follower}명")
-        await client.change_presence(
-            status=discord.Status.online,
-            activity=discord.Activity(
-                type=discord.ActivityType.streaming,
-               name=f"💙 비리비리에서",
-               url="https://www.twitch.tv/felix_overwatch"
-           )
-       )
-    
-    elif last_bilibili_status == False:
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick="")
         await status_role.edit(name="❌ 비리비리 방송 중 아님")
         await client.change_presence(
@@ -141,6 +137,9 @@ async def bilibili_notifs_loop():
                 name="😏 무언가"
             )
         )
+        
+    if last_bilibili_status == True:
+        await status_role.edit(name=f"📈인기도 {online} ❤️팔로워 {follower}명")
 
 @client.event
 async def on_ready():
