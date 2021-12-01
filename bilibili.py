@@ -51,6 +51,7 @@ async def bilibili_notifs_loop():
     
     if live_status == 1 and last_bilibili_status == False: # 방송 시작
         last_bilibili_status = True
+        """
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('headless')
         chrome_options.add_argument('disable-gpu')
@@ -78,25 +79,30 @@ async def bilibili_notifs_loop():
         buffer = io.BytesIO()
         cropped.save(buffer, format="PNG")
         buffer.seek(0)
+        """
         
         embed = discord.Embed()
         embed.colour = 0x01A1D6
         embed.set_author(name=f"{streamer_name}님이 방송을 시작했습니다.", url=live_url, icon_url=avatar_url)
         embed.title = f"{emojis['live1']}{emojis['live2']} {title}"
         embed.add_field(name=f"{emojis['followers']} **팔로워**", value=f"```\n{follower}명```", inline=True)
-        embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
-        embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
-        embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
+        try:
+            embed.add_field(name=f"{emojis['pointer']} **포인트**", value=f"```\n{gifts}만 개```", inline=True)
+            embed.add_field(name=f"{emojis['rank']} **순위**", value=f"```\n{rank}위```", inline=True)
+        except:
+            embed.add_field(name=f"{emojis['online']} **인기도**", value=f"```\n{online}명```", inline=True)
         embed.description = f"[{emojis['bilibili']} 방송 보러 가기]({live_url})"
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
-        embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
+        #embed.set_image(url=f"attachment://bilibili-{mid}-screenshot.png")
+        embed.set_image(url=cover_url)
         embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
 
-        await update_channel.send(content="@everyone", file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
+        #await update_channel.send(content="@everyone", file=discord.File(buffer, f"bilibili-{mid}-screenshot.png"), embed=embed)
+        await update_channel.send(content="@everyone", embed=embed)
         
         await client.get_guild(656862634754310174).get_member(client.user.id).edit(nick=f"📺 {title}")
         await client.change_presence(
@@ -123,7 +129,7 @@ async def bilibili_notifs_loop():
 
         logo_url = "https://logodix.com/logo/1224389.png"
         logotext_url = "https://i0.hdslb.com/bfs/archive/9e5f278027ae7f1e1933b6e4002870361da6c20b.png"
-        embed.set_image(url=cover_url)
+        #embed.set_image(url=cover_url)
         embed.set_thumbnail(url=logotext_url)
         embed.set_footer(icon_url=logo_url, text=live_url)
         #embed.timestamp = datetime.now()
