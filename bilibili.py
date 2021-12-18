@@ -28,7 +28,7 @@ except:
 client = commands.Bot(command_prefix='b?', intents=discord.Intents.all())
 client.remove_command('help')
 
-last_bilibili_status = False
+last_bilibili_status = True
 
 @tasks.loop(minutes=1)
 async def bilibili_notifs_loop():
